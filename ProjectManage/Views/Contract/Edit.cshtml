@@ -1,0 +1,257 @@
+﻿@model ProjectManage.Models.Contract
+<html>
+<head>
+    <title>View</title>
+
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/MyStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script language="javascript" type="text/javascript">
+        $(function () {
+
+            $('#dg').datagrid('loadData', JSON.parse($("#PayOrders").val()));
+        });
+        var editIndex = undefined;
+        function endEditing() {
+            if (editIndex == undefined) { return true }
+            if ($('#dg').datagrid('validateRow', editIndex)) {
+
+                $('#dg').datagrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function onClickCell(index, field) {
+            if (editIndex != index) {
+                if (endEditing()) {
+                    $('#dg').datagrid('selectRow', index)
+                            .datagrid('beginEdit', index);
+                    var ed = $('#dg').datagrid('getEditor', { index: index, field: field });
+                    if (ed) {
+                        ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                    }
+                    editIndex = index;
+                } else {
+                    $('#dg').datagrid('selectRow', editIndex);
+                }
+            }
+        }
+        function append() {
+            if (endEditing()) {
+                $('#dg').datagrid('appendRow', {});
+                editIndex = $('#dg').datagrid('getRows').length - 1;
+                $('#dg').datagrid('selectRow', editIndex)
+                        .datagrid('beginEdit', editIndex);
+            }
+        }
+        function removeit() {
+            if (editIndex == undefined) { return }
+            $('#dg').datagrid('cancelEdit', editIndex)
+                    .datagrid('deleteRow', editIndex);
+            editIndex = undefined;
+            var rows = $('#dg').datagrid('getRows');
+            $("#PayOrders").val(JSON.stringify(rows));
+        }
+        function accept() {
+            if (endEditing()) {
+                $('#dg').datagrid('acceptChanges');
+            }
+
+            var rows = $('#dg').datagrid('getRows');
+            $("#PayOrders").val(JSON.stringify(rows));
+        }
+        function submit() {
+            $('#form').form('submit', {
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (msg) {
+                    $.messager.alert('提示', "保存成功", 'info', function () {
+                        window.location.href = "/Contract/Index/";
+                    });
+                }
+            });
+        }
+
+        function setComboValue(id, value) {
+            $('#'+id).combobox('setValue', value)
+        }
+       
+
+    </script>
+</head>
+
+<body class="easyui-layout" fit="true">
+    <div region="center" border="false" fit="true">
+
+        <form region="center" border="false" fit="true" id="form" method="post"
+              action="/Contract/Edit/" enctype="application/x-www-form-urlencoded">
+            <div region="center" title="主要信息" id="fm" fit="true">
+                <input type="hidden"  name="Id" value="@Model.Id"/>
+                <div class="ftitle">销售合同信息</div>
+                <div class="fitem">
+                    <label>销售合同编号:</label>
+                    
+                    <input id="ContractNum" name="ContractNum" required="true" class="easyui-combobox"
+                           data-options="
+                    url:'/CommModel/GetContractNumList',
+                    method:'get',
+                    valueField:'id',
+                    textField:'text',
+                    panelHeight:'auto',
+                    onLoadSuccess:function()
+                    {
+                         setComboValue($(this).attr('id'),'@Model.ContractNum');
+                    }
+                    " />
+                </div>
+                <div class="fitem">
+                    <label>销售负责人:</label>
+                    <input class="easyui-textbox" required="true" name="SalesManagers"
+                           value="@Model.SalesManagers" />
+                </div>
+                <div class="fitem">
+                    <label>合同名称:</label>
+                    <input type="text" class="easyui-textbox" required="true" name="ContractName"
+                           value="@Model.ContractName" />
+                </div>
+                <div class="fitem">
+                    <label>客户单位:</label>
+                    <input class="easyui-combobox" id="CustmersDept"
+                           name="CustmersDept" required="true"
+                           data-options="
+                           url:'/CommModel/GetCustmersDept',
+                    method:'get',
+                    valueField:'id',
+                    textField:'text',
+                    panelHeight:'auto',
+                    onLoadSuccess:function()
+                    {
+                        setComboValue($(this).attr('id'),'@Model.CustmersDept');
+                    }
+                    ">
+                </div>
+                <div class="fitem">
+                    <label>项目状态:</label>
+
+                    <input class="easyui-combobox" id="ProjectStatus"
+                           name="ProjectStatus" required="true"
+                           data-options="
+                           url:'/CommModel/GetProjectStatus',
+                    method:'get',
+                    valueField:'id',
+                    textField:'text',
+                    panelHeight:'auto',
+                    onLoadSuccess:function()
+                    {
+                        setComboValue($(this).attr('id'),'@Model.ProjectStatus');
+                    }
+                    ">
+                </div>
+                <div class="fitem">
+                    <label>预估金额:</label>
+                    <input class="easyui-numberbox" name="EstimatedAmount" required="true" precision="2"
+                           value="@Model.EstimatedAmount"></input>
+                </div>
+                <div class="fitem">
+                    <label>签订时间:</label>
+                    <input type="text" class="easyui-datebox"  name="OrderTime"
+                           value="@Model.OrderTime" />
+                </div>
+                <div class="fitem">
+                    <label>合同金额:</label>
+                    <input class="easyui-numberbox" name="ContractCount" required="true" precision="2" value="@Model.ContractCount"></input>
+                </div>
+                <div class="fitem">
+                    <label>开票时间:</label>
+                    <input type="text" class="easyui-datebox"  name="BillingTime"
+                           value="@Model.BillingTime" />
+                </div>
+                <div class="fitem">
+                    <label>税率:</label>
+                    <input class="easyui-combobox" id="TaxRate"
+                           name="TaxRate" required="true"
+                           data-options="
+                           url:'/CommModel/GetTaxRate',
+                    method:'get',
+                    valueField:'id',
+                    textField:'text',
+                    panelHeight:'auto',
+                    onLoadSuccess:function()
+                    {
+                    setComboValue($(this).attr('id'),'@Model.TaxRate');
+                    }
+                    ">
+                </div>
+                <div class="fitem">
+                    <label>订单号:</label>
+                    <input type="text" class="easyui-textbox" name="OrderNum"
+                           value="@Model.OrderNum" />
+                </div>
+                <div class="fitem">
+                    <label>票号:</label>
+                    <input type="text" class="easyui-textbox"  name="BillNum"
+                           value="@Model.BillNum" />
+                </div>
+                <div class="fitem">
+                    <label>备注:</label>
+                    <input type="text" class="easyui-textbox" name="Memo"
+                           value="@Model.Memo" />
+                </div>
+                <div>
+                    <input type="hidden" name="PayOrders" id="PayOrders" value="@Model.PayOrders" />
+                </div>
+            </div>
+            <div region="south" style="height:150px; text-align:center">
+                <table id="dg" class="easyui-datagrid" title="" style="width:auto;height:auto"
+                       data-options="
+                iconCls: 'icon-edit',
+                singleSelect: true,
+                toolbar: '#tb',
+                url: '',
+                method: 'get',
+                onClickCell: onClickCell
+            ">
+                    <thead>
+                        <tr>
+                            <th data-options="field:'PayCount',width:200,align:'right',editor:{type:'numberbox',options:{precision:2}}">到账金额</th>
+                            <th data-options="field:'PayTime',width:200,align:'right',editor:'datetimebox'">到账时间</th>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+            <div id="tb" style="height:auto">
+                <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="append()">添加</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="removeit()">删除</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="accept()">保存</a>
+            </div>
+
+        </form>
+
+        <div region="south" border="false" style="text-align: right; height: 40px; line-height: 30px;
+            background-color: #f7f7f7;">
+            <table style="width: 100%">
+                <tr>
+                    <td></td>
+                    <td style="text-align: right">
+
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-save" onclick="submit();">提交</a>
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="location.href = document.referrer;">
+                            返回
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+

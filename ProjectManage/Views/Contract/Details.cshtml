@@ -1,0 +1,71 @@
+﻿@model ProjectManage.Models.Contract
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Contract</legend>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.SalesManagers)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.SalesManagers)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.ContractName)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.ContractName)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.CustmersDept)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CustmersDept)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.OrderTime)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.OrderTime)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.ContractCount)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.ContractCount)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.BillingTime)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.BillingTime)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.BillNum)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.BillNum)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.PayOrders)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.PayOrders)
+    </div>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

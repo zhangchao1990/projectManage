@@ -1,0 +1,83 @@
+﻿@model ProjectManage.Models.Contract
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Import</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/color.css" rel="stylesheet" />
+    <link href="~/Content/MyStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/dateTime.js"></script>
+    <script src="~/Scripts/jquery.form.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+
+            var options = {
+
+                target: '#outputdiv',
+
+                beforeSubmit: showRequest,
+
+                success: showResponse
+
+            };
+
+            $('#filePost').submit(function () {
+
+                $(this).ajaxSubmit(options);
+
+                return false;
+
+            });
+
+            function showRequest(formData, jqForm, options) {
+
+                //alert('发送前');
+
+                return true;
+
+            }
+
+            function showResponse(responseText, statusText) {
+
+                //alert(responseText);
+                if (responseText == "导入成功")
+                {
+                    location.href = "/ContractDetail/Index/" + $("#ContractId").val();
+                }
+
+            }
+
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="center" style="padding: 5px;" border="false">
+        <form action="/ContractDetail/Import" method="post" enctype="multipart/form-data"
+              id="filePost" style="">
+            <div region="center" title="主要信息" id="fm" fit="true">
+                <div class="ftitle">导入信息</div>
+
+                <div class="fitem">
+                    <label>选择文件:</label>
+                    <input type="file" name="file" id="file" />
+                </div>
+                <div class="fitem">
+                    <label>工作簿名称:</label>
+                    <input class="easyui-textbox" required="true" name="sheetName"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <input type="submit" id="filePost" value="导入" />
+                </div>
+                <input type="hidden" name="ContractId" id="ContractId" value="@Model.Id" />
+            </div>
+        </form>
+        <div id="outputdiv"></div>
+    </div>
+
+</body>
+</html>

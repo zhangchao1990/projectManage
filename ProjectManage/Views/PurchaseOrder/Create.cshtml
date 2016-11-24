@@ -1,0 +1,321 @@
+﻿@model ProjectManage.Models.PurchaseOrder
+<html>
+<head>
+    <title>View</title>
+
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/color.css" rel="stylesheet" />
+    <link href="~/Content/MyStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/json2.js"></script>
+    <script src="~/Easyui/datagrid-detailview.js"></script>
+    <script language="javascript" type="text/javascript">
+
+        $(function () {
+            getPurchaseTab();
+        });
+
+        var oldrows = [];
+
+        function moveToPurchase() {
+            var rows = $('#contract_tab').datagrid('getSelections');
+            if (rows.length > 0) {
+                var oldrows = $('#purchase_tab').datagrid('getRows');
+
+                if (oldrows.length > 0) {
+                    for (var i = 0; i < oldrows.length; i++) {
+                        rows.push(oldrows[i]);
+                    }
+                }
+                $('#purchase_tab').datagrid('loadData', rows);
+                $("#PurchaseOrderDetail").val(JSON.stringify(rows));
+            }
+
+            oldrows = [];
+        }
+
+        function submit() {
+            $('#form').form('submit', {
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (msg) {
+                    $.messager.alert('提示', "保存成功", 'info', function () {
+                        window.location.href = "/PurchaseOrder/Index/?page=@ViewBag.page&rows=@ViewBag.rows";
+                    });
+                }
+            });
+        }
+
+        function returnback() {
+            window.location.href = document.referrer + "?page=@ViewBag.page&rows=@ViewBag.rows";
+        }
+        function getContractList() {
+            var contractId = $('#ContractId').combobox('getValue');
+            //alert(contractId);
+            if (contractId > 0) {
+                getContractDetail(contractId);
+            }
+
+        }
+
+
+
+        function getContractDetail(contractId) {
+
+            //var contractId = $('#ContractId').combobox('getValue');
+            //alert(contractId);
+            $('#contract_tab').datagrid({
+                title: '合同明细',
+                iconCls: 'icon-save',
+                nowrap: false,
+                striped: true,
+                url: '/PurchaseOrder/LoadContractDetail/' + contractId,
+                //sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+                toolbar: "#tb",
+                fitColumns: true,
+                pagination: true,
+                pageSize: 20,
+                fit: true,
+                //idField: 'Id',
+                frozenColumns: [[
+	                { field: 'ck', checkbox: true }
+                ]],
+
+                columns: [[
+                    { field: 'EquipmentMaterialName', title: '设备材料名称', width: 100, align: 'left' },
+                    { field: 'Brand', title: '品牌', width: 100, align: 'left' },
+                    { field: 'Specifications', title: '规格', width: 200, align: 'left' },
+                    { field: 'Unit', title: '单位', width: 80, align: 'left' },
+                    { field: 'Count', title: '数量', width: 80, align: 'right' },
+                    { field: 'UnitPrice', title: '单价', width: 80, align: 'right' },
+                    { field: 'PriceSum', title: '总价', width: 80, align: 'right' },
+                    { field: 'Memo', title: '备注', width: 200, align: 'left' },
+                ]],
+                rownumbers: true,
+                toolbar: ['-', {
+                    id: 'btnSave',
+                    text: '移动至采购明细',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        moveToPurchase();
+                    }
+                }]
+            });
+
+        }
+
+        function getPurchaseTab() {
+            $('#purchase_tab').datagrid({
+                title: '采购明细',
+                iconCls: 'icon-save',
+                nowrap: false,
+                striped: true,
+                url: '',
+                sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+                toolbar: "#tb",
+                fitColumns: true,
+                fit: true,
+                idField: 'Id',
+                frozenColumns: [[
+	                { field: 'Id', checkbox: true }
+                ]],
+                rownumbers: true,
+                columns: [[
+                    { field: 'EquipmentMaterialName', title: '设备材料名称', width: 100, align: 'left', editor: 'textbox' },
+                    { field: 'Brand', title: '品牌', width: 100, align: 'left', editor: 'textbox' },
+                    { field: 'Specifications', title: '规格', width: 200, align: 'left', editor: 'textbox' },
+                    { field: 'Unit', title: '单位', width: 80, align: 'left', editor: 'textbox' },
+                    { field: 'Count', title: '数量', width: 80, align: 'right', editor: { type: 'numberbox', options: { precision: 1 } } },
+                    { field: 'UnitPrice', title: '单价', width: 80, align: 'right', editor: { type: 'numberbox', options: { precision: 2 } } },
+                    { field: 'PriceSum', title: '总价', width: 80, align: 'right', editor: { type: 'numberbox', options: { precision: 2 } } },
+                    { field: 'ArrivalAddress', title: '到货地点', width: 80, align: 'left', editor: 'textbox' },
+                    { field: 'ArrivalTime', title: '到货时间', width: 80, align: 'left', editor: 'datetimebox' },
+                    { field: 'Receiver', title: '签收人', width: 80, align: 'left', editor: 'textbox' },
+                    { field: 'ReceiveTime', title: '签收时间', width: 80, align: 'left', editor: 'datetimebox' },
+                    { field: 'Memo', title: '备注', width: 200, align: 'left', editor: 'textbox' },
+                ]],
+                onClickCell: onClickCell,
+                onEndEdit: onEndEdit
+            });
+        }
+
+        var editIndex = undefined;
+        function endEditing() {
+            if (editIndex == undefined) { return true }
+            if ($('#purchase_tab').datagrid('validateRow', editIndex)) {
+                $('#purchase_tab').datagrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function onClickCell(index, field) {
+            if (editIndex != index) {
+                if (endEditing()) {
+
+                    $('#purchase_tab').datagrid('selectRow', index)
+                            .datagrid('beginEdit', index);
+                    var edCount = $('#purchase_tab').datagrid('getEditor', { index: index, field: "Count" });
+                    var edUnit = $('#purchase_tab').datagrid('getEditor', { index: index, field: "UnitPrice" });
+                    var edPrice = $('#purchase_tab').datagrid('getEditor', { index: index, field: "PriceSum" });
+                    $(edCount.target).numberbox({
+                        onChange: function () {
+
+                            $(edPrice.target).numberbox("setValue", $(this).val() * $(edUnit.target).val());
+                        }
+                    });
+
+                    $(edUnit.target).numberbox({
+                        onChange: function () {
+
+                            $(edPrice.target).numberbox("setValue", $(this).val() * $(edCount.target).val());
+                        }
+                    });
+
+                    editIndex = index;
+                } else {
+                    setTimeout(function () {
+                        $('#purchase_tab').datagrid('selectRow', editIndex);
+                    }, 0);
+                }
+            }
+        }
+        function onEndEdit(index, row) {
+            //var ed = $(this).datagrid('getEditor', {
+            //    index: index,
+            //    field: 'productid'
+            //});
+            //row.productname = $(ed.target).combobox('getText');
+        }
+        function append() {
+            if (endEditing()) {
+                $('#purchase_tab').datagrid('appendRow', {});
+                editIndex = $('#purchase_tab').datagrid('getRows').length - 1;
+                $('#purchase_tab').datagrid('selectRow', editIndex)
+                        .datagrid('beginEdit', editIndex);
+            }
+        }
+        function removeit() {
+            if (editIndex == undefined) { return }
+            $('#purchase_tab').datagrid('cancelEdit', editIndex)
+                    .datagrid('deleteRow', editIndex);
+            editIndex = undefined;
+            var rows = $('#purchase_tab').datagrid('getRows');
+            if (rows.length > 0) {
+                $("#PurchaseOrderDetail").val(JSON.stringify(rows));
+            }
+        }
+        function accept() {
+            if (endEditing()) {
+                $('#purchase_tab').datagrid('acceptChanges');
+            }
+            var rows = $('#purchase_tab').datagrid('getRows');
+            if (rows.length > 0) {
+                $("#PurchaseOrderDetail").val(JSON.stringify(rows));
+            }
+        }
+        function reject() {
+            $('#purchase_tab').datagrid('rejectChanges');
+            editIndex = undefined;
+        }
+    </script>
+</head>
+
+<body class="easyui-layout" fit="true">
+    <div region="center" border="false" title="采购申请信息">
+
+        <form border="false" id="form" method="post" region="center"
+              action="/PurchaseOrder/Create/" enctype="application/x-www-form-urlencoded">
+            <div title="主要信息" id="fm" fit="true">
+
+                <div class="ftitle">采购申请信息</div>
+                <div class="fitem">
+                    <label>采购申请编号:</label>
+                    <input class="easyui-textbox" required="true" name="PurchaseNum"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>采购申请人:</label>
+                    <input class="easyui-textbox" name="PurchasePerson"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>项目负责人:</label>
+                    <input type="text" class="easyui-textbox" required="true" name="ProjectManager"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>采购时间:</label>
+                    <input type="text" class="easyui-datebox" required="true" name="PurchaseTime"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>备注:</label>
+                    <input type="text" class="easyui-textbox" name="Memo"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>销售合同信息:</label>
+                    <input class="easyui-combobox" id="ContractId"
+                           name="ContractId"
+                           data-options="
+                    url:'/Contract/GetContractList',
+                    method:'get',
+                    valueField:'id',
+                    textField:'text',
+                    onLoadSuccess: function () {
+                           $('#ContractId').combobox('setValue', '@ViewBag.contractId');
+                           getContractDetail('@ViewBag.contractId');
+                    },
+                    onSelect: function(rec){
+                            getContractList();
+                    }
+            ">
+                </div>
+            </div>
+            <div region="south" style="height:250px; text-align:center" title="合同明细">
+                <table id="contract_tab"></table>
+            </div>
+
+            <div region="south" style="height:200px; text-align:center" title="采购明细">
+                <table id="purchase_tab"></table>
+            </div>
+            <input type="hidden" name="PurchaseOrderDetail" id="PurchaseOrderDetail" />
+
+        </form>
+
+
+        <div region="south" border="false" style="text-align: right; height: 40px; line-height: 30px;
+            background-color: #f7f7f7;">
+            <table style="width: 100%">
+                <tr>
+                    <td></td>
+                    <td style="text-align: right">
+
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-save" onclick="submit();">提交</a>
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="returnback()">
+                            返回
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="tb" style="height:auto">
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="append()">添加</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="removeit()">删除</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="accept()">保存</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="reject()">取消</a>
+        </div>
+    </div>
+</body>
+</html>

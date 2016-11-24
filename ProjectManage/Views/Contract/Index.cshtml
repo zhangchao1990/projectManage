@@ -1,0 +1,336 @@
+﻿@model ProjectManage.Models.Employer
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Index</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/dateTime.js"></script>
+    <script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+
+            $('#grid').datagrid({
+                title: '销售合同信息',
+                iconCls: 'icon-save',
+                nowrap: false,
+                striped: true,
+                url: '/Contract/LoadAllByPage/',
+                sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+                queryParams: { Year: '@DateTime.Now.ToString("yyyy")' },
+                fit: true,
+                idField: 'Id',
+                frozenColumns: [[
+	                { field: 'Id', checkbox: true }
+                ]],
+
+                columns: [[
+                    {
+                        field: 'ContractNum', title: '销售合同编号', width: 100, align: 'left', editor: {
+                            type: 'textbox', options: {
+                                required: true
+                            }
+                        }
+                    },
+                    {
+                        field: 'SalesManagers', title: '销售人', width: 50, align: 'center', editor: {
+                            type: 'textbox', options: {
+                                required: true
+                            }
+                        }
+                    },
+                    {
+                        field: 'ContractName', title: '合同名称', width: 200, align: 'left', editor: {
+                            type: 'textbox', options: {
+                                required: true
+                            }
+                        }
+                    },
+                    { field: 'Memo', title: '备注', width: 100, align: 'center', editor: 'textbox' },
+                    {
+                        field: 'CustmersDept', title: '客户单位', width: 200, align: 'left', editor: {
+                            type: 'combobox', options: {
+                                valueField: 'id',
+                                textField: 'text',
+                                method: 'get',
+                                url: '/CommModel/GetCustmersDept',
+                                required: true
+                            }
+                        }
+                    },
+                    {
+                        field: 'ProjectStatus', title: '项目状态', width: 80, align: 'center', editor: {
+                            type: 'combobox', options: {
+                                valueField: 'id',
+                                textField: 'text',
+                                method: 'get',
+                                url: '/CommModel/GetProjectStatus',
+                                required: true
+                            }
+                        }
+                    },
+                    { field: 'EstimatedAmount', title: '预估金额', width: 80, align: 'right', editor: { type: 'numberbox', options: { precision: 2, required: true } } },
+                    { field: 'ContractCount', title: '合同金额', width: 80, align: 'right', editor: { type: 'numberbox', options: { precision: 2, required: true } } },
+
+                    {
+                        field: 'ContractedCount', title: '已发生开支', width: 80, align: 'right', formatter: function (value, row) {
+                            if (value != null) {
+                                if (value > 0 && row.ContractNum != '合计') {
+                                    return '<a href="/Contract/GetPurchaseDetail/' + row.Id + '">' + value + '</a>'
+                                } else if (row.ContractNum == '合计') {
+                                    return value;
+                                } else {
+                                    return 0;
+                                }
+                            }
+                        }
+                    },
+                    {
+                        field: 'OrderTime', title: '签订时间', width: 80, align: 'center', formatter: function (value) {
+                            if (value != null) {
+                                if (value.length > 0) {
+                                    value = eval("new " + value.split('/')[1]);
+                                    return dateToString(value, "yyyy-MM-dd");
+                                }
+                            }
+                        }, editor: 'datebox'
+                    },
+                    {
+                        field: 'BillingTime', title: '开票时间', width: 80, align: 'center', formatter: function (value) {
+                            if (value != null) {
+                                if (value.length > 0) {
+                                    value = eval("new " + value.split('/')[1]);
+                                    return dateToString(value, "yyyy-MM-dd");
+                                }
+                            }
+                        }, editor: 'datebox'
+                    },
+                    {
+                        field: 'TaxRate', title: '税率', width: 50, align: 'right', editor: {
+                            type: 'combobox', options: {
+                                valueField: 'id',
+                                textField: 'text',
+                                method: 'get',
+                                url: '/CommModel/GetTaxRate',
+                                required: true
+                            }
+                        }
+                    },
+                    { field: 'OrderNum', title: '订单号', width: 100, align: 'center', editor: 'textbox' },
+                    { field: 'BillNum', title: '票号', width: 80, align: 'center', editor: 'textbox' },
+                    { field: 'ArrivalCount', title: '到账金额', width: 80, align: 'right' },
+                    { field: 'RemainCount', title: '剩余金额', width: 80, align: 'right' }
+
+
+                ]],
+                onLoadSuccess: function (data) {
+
+                    
+                },
+                pagination: true,
+                pageSize: 20,
+                rownumbers: true,
+                showFooter: true,
+                toolbar: ['-', {
+                    id: 'btnSave',
+                    text: '添加',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        this.href = "/Contract/Create/";
+                    }
+                }, '-', {
+                    id: 'btnAppend',
+                    text: '添加行',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        append();
+                    }
+                }, '-', {
+                    id: 'btnSave',
+                    text: '保存',
+                    iconCls: 'icon-save',
+                    handler: function () {
+                        accept();
+                    }
+                }, '-', {
+                    id: 'btnUpdate',
+                    text: '修改',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+
+                        var row = $('#grid').datagrid('getSelected');
+                        if (row) {
+                            this.href = "/Contract/Edit/" + row.Id;
+                        }
+                        else {
+                            $.messager.alert('提示', '请选择要修改的数据');
+                            return;
+                        }
+
+                    }
+                }, '-', {
+                    id: 'btnDelete',
+                    text: '删除',
+                    disabled: false,
+                    iconCls: 'icon-cut',
+                    handler: function () {
+
+                        var rows = $('#grid').datagrid('getSelections');
+                        if (!rows || rows.length == 0) {
+                            $.messager.alert('提示', '请选择要删除的数据');
+                            return;
+                        }
+                        var parm;
+                        $.each(rows, function (i, n) {
+                            if (i == 0) {
+                                parm = "idList=" + n.Id;
+                            }
+                            else {
+                                parm += "&idList=" + n.Id;
+                            }
+                        });
+                        $.messager.confirm('提示', '是否删除这些数据?', function (r) {
+                            if (!r) {
+                                return;
+                            }
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/Contract/Delete/",
+                                data: parm,
+                                success: function (msg) {
+                                    if (msg.IsSuccess) {
+                                        $.messager.alert('提示', '删除成功！', "info", function () {
+                                            $('#grid').datagrid("reload").datagrid('clearSelections');;
+                                        });
+                                    } else {
+                                        $.messager.alert('错误', msg.Message, "error");
+                                    }
+                                },
+                                error: function () {
+                                    $.messager.alert('错误', '删除失败！', "error");
+                                }
+                            });
+                        });
+                    }
+                }, '-', {
+                    id: 'btnDetail',
+                    text: '添加合同明细',
+                    iconCls: 'icon-add',
+                    handler: function () {
+
+                        var row = $('#grid').datagrid('getSelected');
+                        if (row) {
+                            this.href = "/ContractDetail/Index/" + row.Id;
+                        }
+                        else {
+                            $.messager.alert('提示', '请选择要修改的数据');
+                            return;
+                        }
+
+                    }
+                }, '-', {
+                    id: 'nf',
+                    text: '年份：<input type="text" style="width:150px" name="Year" id ="Year"  onfocus="WdatePicker({isShowClear:true,dateFmt:\'yyyy\',maxDate:\'%y\'})" value="@DateTime.Now.ToString("yyyy")" />   ',
+                    iconCls: '',
+                    handler: function () {
+
+                    }
+                }, '-', {
+                    id: 'query',
+                    text: '销售负责人：<input type="text" style="width:150px" name="SalesManagers"  id ="SalesManagers" />' +
+                        '合同名称：<input type="text" style="width:150px" name="ContractName" id ="ContractName" />',
+                    iconCls: '',
+                    handler: function () {
+
+                    }
+                }, '-', {
+                    id: 'btnQuery',
+                    text: '查询',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        $('#grid').datagrid('reload', { Year: $("#Year").val(), SalesManagers: $('#SalesManagers').combo("getValue"), ContractName: $('#ContractName').val() });
+
+
+                    }
+                }]
+            });
+
+
+
+
+            $('#SalesManagers').combobox({
+                method: 'get',
+                url: '/Employer/GetEmployersList',
+                valueField: 'id',
+                textField: 'text',
+                onLoadSuccess: function () {
+
+
+                }
+            });
+
+
+        });
+
+        var editIndex = undefined;
+        function endEditing() {
+            if (editIndex == undefined) { return true }
+            if ($('#grid').datagrid('validateRow', editIndex)) {
+                $('#grid').datagrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function append() {
+            if (endEditing()) {
+                $('#grid').datagrid('appendRow', { SalesManagers: '@Model.Name', EstimatedAmount: 0, ContractCount: 0 });
+                editIndex = $('#grid').datagrid('getRows').length - 1;
+                $('#grid').datagrid('selectRow', editIndex)
+                        .datagrid('beginEdit', editIndex);
+            }
+        }
+
+        function accept() {
+            if (endEditing()) {
+                var rows = $('#grid').datagrid('getChanges');
+                if (rows.length <= 0) {
+                    return;
+                }
+                $('#grid').datagrid('acceptChanges');
+                $.ajax({
+                    type: "POST",
+                    url: "/Contract/Create/",
+                    data: rows[0],
+                    success: function (msg) {
+                        if (msg.IsSuccess) {
+                            $.messager.alert('提示', '保存成功！', "info", function () {
+                                $('#grid').datagrid("reload").datagrid('clearSelections');;
+                            });
+                        } else {
+                            $.messager.alert('错误', msg.Message, "error");
+                        }
+                    },
+                    error: function () {
+                        $.messager.alert('错误', '删除失败！', "error");
+                    }
+                });
+            }
+
+
+        }
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="center" style="padding: 5px;" border="false">
+        <table id="grid"></table>
+    </div>
+</body>
+</html>

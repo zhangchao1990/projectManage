@@ -1,0 +1,151 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Index</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/dateTime.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+
+            $('#detailgrid').datagrid({
+                title: '销售合同详细',
+                nowrap: false,
+                striped: true,
+                url: '/ContractDetail/LoadPage/',
+                sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+                //fitColumns: true,
+                fit: true,
+                queryParams: { Id: $('#ContractId').val() },
+                idField: 'Id',
+                frozenColumns: [[
+	                { field: 'Id', checkbox: true }
+                ]],
+
+                columns: [[
+                    { field: 'EquipmentMaterialName', title: '设备材料名称', width: 100, align: 'left' },
+                    { field: 'Brand', title: '品牌', width: 100, align: 'left' },
+                    { field: 'Specifications', title: '规格', width: 200, align: 'left' },
+                    { field: 'Unit', title: '单位', width: 80, align: 'left' },
+                    { field: 'Count', title: '数量', width: 80, align: 'right' },
+                    { field: 'UnitPrice', title: '单价', width: 80, align: 'right' },
+                    { field: 'PriceSum', title: '总价', width: 80, align: 'right' },
+                    { field: 'Memo', title: '备注', width: 200, align: 'left' },
+                ]],
+                rownumbers: true,
+                toolbar: ['-', {
+                    id: 'btnSave',
+                    text: '添加',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        this.href = "/ContractDetail/Create/" + $("#ContractId").val();
+                    }
+                }, '-', {
+                    id: 'btnUpdate',
+                    text: '修改',
+                    iconCls: 'icon-save',
+                    handler: function () {
+
+                        var row = $('#detailgrid').datagrid('getSelected');
+                        if (row) {
+                            this.href = "/ContractDetail/Edit/" + row.Id;
+                        }
+                        else {
+                            $.messager.alert('提示', '请选择要修改的数据');
+                            return;
+                        }
+
+                    }
+                }, '-', {
+                    id: 'btnDelete',
+                    text: '删除',
+                    disabled: false,
+                    iconCls: 'icon-cut',
+                    handler: function () {
+
+                        var rows = $('#detailgrid').datagrid('getSelections');
+                        if (!rows || rows.length == 0) {
+                            $.messager.alert('提示', '请选择要删除的数据');
+                            return;
+                        }
+                        var parm;
+                        $.each(rows, function (i, n) {
+                            if (i == 0) {
+                                parm = "idList=" + n.Id;
+                            }
+                            else {
+                                parm += "&idList=" + n.Id;
+                            }
+                        });
+                        $.messager.confirm('提示', '是否删除这些数据?', function (r) {
+                            if (!r) {
+                                return;
+                            }
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/ContractDetail/Delete/",
+                                data: parm,
+                                success: function (msg) {
+                                    if (msg.IsSuccess) {
+                                        $.messager.alert('提示', '删除成功！', "info", function () {
+                                            $('#detailgrid').datagrid("reload").datagrid('clearSelections');;
+                                        });
+                                    }
+                                },
+                                error: function () {
+                                    $.messager.alert('错误', '删除失败！', "error");
+                                }
+                            });
+                        });
+                    }
+                },  '-', {
+                    id: 'btnExport',
+                    text: '导入',
+                    iconCls: 'icon-more',
+                    handler: function () {
+
+                        this.href = "/ContractDetail/Import/" + $("#ContractId").val();
+
+                    }
+                },'-', {
+                    id: 'btnDetail',
+                    text: '查看',
+                    iconCls: 'icon-more',
+                    handler: function () {
+
+                        var row = $('#detailgrid').datagrid('getSelected');
+                        if (row) {
+                            this.href = "/ContractDetail/Detail/" + row.Id;
+                        }
+                        else {
+                            $.messager.alert('提示', '请选择要查看的数据');
+                            return;
+                        }
+
+                    }
+                }, '-', {
+                    id: 'btnReturn',
+                    text: '返回',
+                    iconCls: 'icon-more',
+                    handler: function () {
+                        location.href = "/Contract/Index/";
+                    }
+                }]
+            });
+
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="center" style="padding: 5px;" border="false">
+        <input id="ContractId" type="hidden" value="@ViewBag.ContractId" />
+        <table id="detailgrid"></table>
+    </div>
+</body>
+</html>

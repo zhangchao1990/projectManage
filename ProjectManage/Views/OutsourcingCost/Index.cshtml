@@ -1,0 +1,179 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Index</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/dateTime.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+
+            $('#grid').datagrid({
+                title: '外协用工的工资费用统计',
+                iconCls: 'icon-save',
+                nowrap: false,
+                striped: true,
+                url: '/OutsourcingCost/LoadAllByPage/',
+                sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+                fitColumns: true,
+                fit: true,
+                idField: 'Id',
+                frozenColumns: [[
+	                { field: 'Id', checkbox: true }
+                ]],
+
+                columns: [[
+                    { field: 'ContractNum', title: '合同编号', width: 100, align: 'left' },
+                    { field: 'ContractName', title: '合同名称', width: 100, align: 'left' },
+                    { field: 'OutsourcingPeopleName', title: '外协工名称', width: 100, align: 'left' },
+                    {
+                        field: 'BeginTime', title: '开始时间', width: 100, align: 'left', formatter: function (value) {
+                            if (value != null) {
+                                if (value.length > 0) {
+                                    value = eval("new " + value.split('/')[1]);
+                                    return dateToString(value, "yyyy-MM-dd HH:mm");
+                                }
+                            }
+                        }
+                    },
+                    {
+                        field: 'EndTime', title: '结束时间', width: 80, align: 'left', formatter: function (value) {
+                            if (value != null) {
+                                if (value.length > 0) {
+                                    value = eval("new " + value.split('/')[1]);
+                                    return dateToString(value, "yyyy-MM-dd HH:mm");
+                                }
+                            }
+                        }
+                    },
+                    { field: 'Days', title: '天数', width: 80, align: 'right' },
+                    { field: 'Pay', title: '工资', width: 80, align: 'right' },
+                    { field: 'Subtotal', title: '小计', width: 80, align: 'right' },
+                    { field: 'AuditAmount', title: '审计金额', width: 80, align: 'right' },
+                    { field: 'Memo', title: '备注', width: 200, align: 'left' },
+
+
+                ]],
+                pagination: true,
+                pageSize: 20,
+                rownumbers: true,
+                showFooter: true,
+                toolbar: ['-', {
+                    id: 'btnSave',
+                    text: '添加',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        this.href = "/OutsourcingCost/Create/";
+                    }
+                }, '-', {
+                    id: 'btnUpdate',
+                    text: '修改',
+                    iconCls: 'icon-save',
+                    handler: function () {
+
+                        var row = $('#grid').datagrid('getSelected');
+                        if (row) {
+                            this.href = "/OutsourcingCost/Edit/" + row.Id;
+                        }
+                        else {
+                            $.messager.alert('提示', '请选择要修改的数据');
+                            return;
+                        }
+
+                    }
+                }, '-', {
+                    id: 'btnDelete',
+                    text: '删除',
+                    disabled: false,
+                    iconCls: 'icon-cut',
+                    handler: function () {
+
+                        var rows = $('#grid').datagrid('getSelections');
+                        if (!rows || rows.length == 0) {
+                            $.messager.alert('提示', '请选择要删除的数据');
+                            return;
+                        }
+                        var parm;
+                        $.each(rows, function (i, n) {
+                            if (i == 0) {
+                                parm = "idList=" + n.Id;
+                            }
+                            else {
+                                parm += "&idList=" + n.Id;
+                            }
+                        });
+                        $.messager.confirm('提示', '是否删除这些数据?', function (r) {
+                            if (!r) {
+                                return;
+                            }
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/OutsourcingCost/Delete/",
+                                data: parm,
+                                success: function (msg) {
+                                    if (msg.IsSuccess) {
+                                        $.messager.alert('提示', '删除成功！', "info", function () {
+                                            $('#grid').datagrid("reload").datagrid('clearSelections');;
+                                        });
+                                    }
+                                },
+                                error: function () {
+                                    $.messager.alert('错误', '删除失败！', "error");
+                                }
+                            });
+                        });
+                    }
+                }, '-', {
+                    id: 'btnAudit',
+                    text: '审计金额',
+                    disabled: false,
+                    iconCls: 'icon-cut',
+                    handler: function () {
+
+                        var row = $('#grid').datagrid('getSelected');
+                        if (row) {
+                            this.href = "/OutsourcingCost/Audit/" + row.Id;
+                        }
+                        else {
+                            $.messager.alert('提示', '请选择要修改的数据');
+                            return;
+                        }
+
+                    }
+                }, '-', {
+                    id: 'query',
+                    text: '外协工姓名：<input type="text" style="width:150px" name="OutsourcingPeopleName" id ="OutsourcingPeopleName" /> 合同名称：<input type="text" style="width:150px" name="ContractName" id ="ContractName" />  ',
+                    iconCls: '',
+                    handler: function () {
+
+
+                    }
+                }, '-', {
+                    id: 'btnQuery',
+                    text: '查询',
+                    iconCls: 'icon-add',
+                    handler: function () {
+
+                        $('#grid').datagrid('reload', { OutsourcingPeopleName: $('#OutsourcingPeopleName').val(),ContractName:$('#ContractName').val( )});
+
+
+                    }
+                }]
+            });
+
+
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="center" style="padding: 5px;" border="false">
+        <table id="grid"></table>
+    </div>
+</body>
+</html>

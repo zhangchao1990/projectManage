@@ -1,0 +1,119 @@
+﻿@model ProjectManage.Models.Contract
+<html>
+<head>
+    <title>View</title>
+
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/color.css" rel="stylesheet" />
+    <link href="~/Content/MyStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/json2.js"></script>
+    <script language="javascript" type="text/javascript">
+       
+
+        function submit() {
+            $('#form').form('submit', {
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (msg) {
+                    $.messager.alert('提示', "保存成功", 'info', function () {
+                        window.location.href = "/ContractDetail/Index/" + $("#ContractId").val();
+                    });
+                }
+            });
+        }
+
+        function setPriceSum()
+        {
+            
+            if ($('#Count').val().length > 0 && $('#UnitPrice').val().length>0){
+                $('#PriceSum').numberbox('setValue',$('#Count').val() * $('#UnitPrice').val());
+            }
+        }
+
+    </script>
+</head>
+
+<body class="easyui-layout" fit="true">
+    <div region="center" border="false" title="销售合同明细信息">
+
+        <form border="false" id="form" method="post"
+              action="/ContractDetail/Create/" enctype="application/x-www-form-urlencoded">
+            <div region="center" title="主要信息" id="fm" fit="true">
+
+                <div class="ftitle">销售合同明细</div>
+                <div class="fitem">
+                    <label>设备材料名称:</label>
+                    <input class="easyui-textbox" required="true" name="EquipmentMaterialName"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>品牌:</label>
+                    <input class="easyui-textbox"  name="Brand"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>规格:</label>
+                    <input type="text" class="easyui-textbox" required="true" name="Specifications"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>单位:</label>
+                    <input type="text" class="easyui-textbox" required="true" name="Unit"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>数量:</label>
+                    <input type="text" class="easyui-numberbox" name="Count" id="Count" required="true" data-options="onChange:function(newval,oldval){
+                                setPriceSum();
+                           }"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>单价:</label>
+                    <input type="text" class="easyui-numberbox" precision="2" id="UnitPrice" name="UnitPrice" required="true"
+                           value="" data-options="onChange:function(newval,oldval){
+                                setPriceSum();
+                           }" />
+                </div>
+                <div class="fitem">
+                    <label>总价:</label>
+                    <input type="text" class="easyui-numberbox" precision="2" id="PriceSum" name="PriceSum" required="true"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>备注:</label>
+                    <input type="text" class="easyui-textbox" name="Memo"
+                           value="" />
+                </div>
+                <input type="hidden" id="ContractId" name="ContractId" value="@ViewBag.ContractId" />
+            </div>
+        </form>
+
+
+
+        <div region="south" border="false" style="text-align: right; height: 40px; line-height: 30px;
+            background-color: #f7f7f7;">
+            <table style="width: 100%">
+                <tr>
+                    <td></td>
+                    <td style="text-align: right">
+
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-save" onclick="submit();">提交</a>
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="location.href = document.referrer;">
+                            返回
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+

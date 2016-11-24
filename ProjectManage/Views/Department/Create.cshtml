@@ -1,0 +1,75 @@
+﻿@model ProjectManage.Models.Department
+<html>
+<head>
+    <title>View</title>
+
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/color.css" rel="stylesheet" />
+    <link href="~/Content/MyStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script language="javascript" type="text/javascript">
+
+        function submit() {
+            $('#form').form('submit', {
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (msg) {
+                    $.messager.alert('提示', "保存成功", 'info', function () {
+                        window.location.href = "/Department/Index/";
+                    });
+                }
+            });
+        }
+
+    </script>
+</head>
+
+<body class="easyui-layout" fit="true">
+    <div region="center" border="false" title="部门信息">
+
+        <form border="false" id="form" method="post"
+              action="/Department/Create/" enctype="application/x-www-form-urlencoded">
+            <div region="center" title="主要信息" id="fm" fit="true">
+
+                <div class="ftitle">部门信息</div>
+                <div class="fitem">
+                    <label>部门名称:</label>
+                    <input class="easyui-textbox" required="true" name="DeptName"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>说明:</label>
+                    <input class="easyui-textbox" required="true" name="Memo"
+                           value="" />
+                </div>
+                
+            </div>
+        </form>
+
+
+
+        <div region="south" border="false" style="text-align: right; height: 40px; line-height: 30px;
+            background-color: #f7f7f7;">
+            <table style="width: 100%">
+                <tr>
+                    <td></td>
+                    <td style="text-align: right">
+
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-save" onclick="submit();">提交</a>
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="location.href = document.referrer;">
+                            返回
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+

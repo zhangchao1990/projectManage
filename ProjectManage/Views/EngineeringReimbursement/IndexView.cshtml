@@ -1,0 +1,99 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Index</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/dateTime.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+
+            $('#grid').datagrid({
+                title: '工程报销统计信息',
+                iconCls: 'icon-save',
+                nowrap: false,
+                striped: true,
+                url: '/EngineeringReimbursement/LoadAllByPage/',
+                queryParams: { ContractName: '@ViewBag.ContractName' },
+                sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+                fitColumns: true,
+                fit: true,
+                idField: 'Id',
+                frozenColumns: [[
+	                { field: 'Id', checkbox: true }
+                ]],
+
+                columns: [[
+                    { field: 'ContractNum', title: '合同编号', width: 150, align: 'left' },
+                    { field: 'ContractName', title: '合同名称', width: 250, align: 'left' },
+                    { field: 'ReimbursementPerson', title: '报销人', width: 100, align: 'left' },
+                    {
+                        field: 'ReimbursementTime', title: '报销时间', width: 150, align: 'left', formatter: function (value) {
+                            if (value != null) {
+                                if (value.length > 0) {
+                                    value = eval("new " + value.split('/')[1]);
+                                    return dateToString(value, "yyyy-MM-dd");
+                                }
+                            }
+                        }
+                    },
+                    {
+                        field: 'StartingTime', title: '出发时间', width: 150, align: 'left', formatter: function (value) {
+                            if (value != null) {
+                                if (value.length > 0) {
+                                    value = eval("new " + value.split('/')[1]);
+                                    return dateToString(value, "yyyy-MM-dd HH:mm");
+                                }
+                            }
+                        }
+                    },
+                    {
+                        field: 'ReturnTime', title: '返回时间', width: 150, align: 'left', formatter: function (value) {
+                            if (value != null) {
+                                if (value.length > 0) {
+                                    value = eval("new " + value.split('/')[1]);
+                                    return dateToString(value, "yyyy-MM-dd HH:mm");
+                                }
+                            }
+                        }
+                    },
+                    { field: 'Participant', title: '参与人员', width: 200, align: 'left' },
+                    { field: 'Fare', title: '交通费', width: 80, align: 'right' },
+                    { field: 'FoodAllowance', title: '伙食补助', width: 80, align: 'right' },
+                    { field: 'AccommodationAllowance', title: '住宿补助', width: 80, align: 'right' },
+                    { field: 'OtherExpenses', title: '其他费用', width: 80, align: 'right' },
+                    { field: 'Subtotal', title: '小计', width: 80, align: 'right' },
+                    { field: 'AuditAmount', title: '审计金额', width: 80, align: 'right' },
+                    { field: 'Memo', title: '备注', width: 200, align: 'right' },
+
+
+                ]],
+                pagination: true,
+                pageSize: 20,
+                rownumbers: true,
+                showFooter: true,
+                toolbar: ['-', '-', {
+                    id: 'btnReturn',
+                    text: '返回',
+                    iconCls: 'icon-more',
+                    handler: function () {
+                        location.href = "/Contract/GetPurchaseDetail/" + '@ViewBag.Id';
+                    }
+                }]
+            });
+
+
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="center" style="padding: 5px;" border="false">
+        <table id="grid"></table>
+    </div>
+</body>
+</html>

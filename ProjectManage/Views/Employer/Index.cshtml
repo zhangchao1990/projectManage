@@ -1,0 +1,119 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Index</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/dateTime.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+
+            $('#grid').datagrid({
+                title: '人员信息',
+                iconCls: 'icon-save',
+                nowrap: false,
+                striped: true,
+                url: '/Employer/LoadAllByPage/',
+                sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+
+                fit: true,
+                idField: 'Id',
+                frozenColumns: [[
+	                { field: 'Id', checkbox: true }
+                ]],
+
+                columns: [[
+                    { field: 'Name', title: '人员名称', width: 200, align: 'left' },
+                    { field: 'DeptName', title: '部门名称', width: 200, align: 'left' },
+                    { field: 'RoleName', title: '角色名称', width: 200, align: 'left' },
+                    { field: 'Memo', title: '备注', width: 200, align: 'left' }
+
+
+                ]],
+                pagination: true,
+                pageSize: 20,
+                rownumbers: true,
+                toolbar: ['-', {
+                    id: 'btnSave',
+                    text: '添加',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        this.href = "/Employer/Create/";
+                    }
+                }, '-', {
+                    id: 'btnUpdate',
+                    text: '修改',
+                    iconCls: 'icon-save',
+                    handler: function () {
+
+                        var row = $('#grid').datagrid('getSelected');
+                        if (row) {
+                            this.href = "/Employer/Edit/" + row.Id;
+                        }
+                        else {
+                            $.messager.alert('提示', '请选择要修改的数据');
+                            return;
+                        }
+
+                    }
+                }, '-', {
+                    id: 'btnDelete',
+                    text: '删除',
+                    disabled: false,
+                    iconCls: 'icon-cut',
+                    handler: function () {
+
+                        var rows = $('#grid').datagrid('getSelections');
+                        if (!rows || rows.length == 0) {
+                            $.messager.alert('提示', '请选择要删除的数据');
+                            return;
+                        }
+                        var parm;
+                        $.each(rows, function (i, n) {
+                            if (i == 0) {
+                                parm = "idList=" + n.Id;
+                            }
+                            else {
+                                parm += "&idList=" + n.Id;
+                            }
+                        });
+                        $.messager.confirm('提示', '是否删除这些数据?', function (r) {
+                            if (!r) {
+                                return;
+                            }
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/Employer/Delete/",
+                                data: parm,
+                                success: function (msg) {
+                                    if (msg.IsSuccess) {
+                                        $.messager.alert('提示', '删除成功！', "info", function () {
+                                            $('#grid').datagrid("reload").datagrid('clearSelections');;
+                                        });
+                                    }
+                                },
+                                error: function () {
+                                    $.messager.alert('错误', '删除失败！', "error");
+                                }
+                            });
+                        });
+                    }
+                }]
+            });
+
+
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="center" style="padding: 5px;" border="false">
+        <table id="grid"></table>
+    </div>
+</body>
+</html>

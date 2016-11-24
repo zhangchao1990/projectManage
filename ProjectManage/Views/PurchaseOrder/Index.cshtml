@@ -1,0 +1,256 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Index</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Easyui/datagrid-detailview.js"></script>
+    <script src="~/Scripts/dateTime.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            var ddv;
+            var page = "@ViewBag.page";
+            var rows = "@ViewBag.rows";
+            if (page.length > 0) {
+                page = parseInt(page);
+            } else
+            {
+                page = 1;
+            }
+           
+            if (rows.length > 0) {
+                rows = parseInt(rows);
+            } else {
+                rows = 20;
+            }
+            $('#grid').datagrid({
+                title: '采购申请管理信息',
+                iconCls: 'icon-save',
+                nowrap: false,
+                striped: true,
+                url: '/Contract/LoadAllByPage/',
+                sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+                fitColumns: true,
+                fit: true,
+                idField: 'Id',
+                frozenColumns: [[
+	                { field: 'Id', checkbox: true }
+                ]],
+                rowStyler: function (index, row) {
+                    if (row.Status > 0) {
+                        return 'color:#f00;';
+                    } else {
+                        return 'color:#000;';
+                    }
+
+                },
+                columns: [[
+                    { field: 'ContractNum', title: '销售合同编号', width: 80, align: 'left' },
+                    { field: 'SalesManagers', title: '销售负责人', width: 80, align: 'left' },
+                    { field: 'ContractName', title: '合同名称', width: 80, align: 'left' },
+                    { field: 'CustmersDept', title: '客户单位', width: 80, align: 'left' },
+                    {
+                        field: 'OrderTime', title: '合同签订时间', width: 80, align: 'left',
+                        formatter: function (value) {
+                            if (value != null) {
+                                if (value.length > 0) {
+                                    value = eval("new " + value.split('/')[1]);
+                                    return dateToString(value, "yyyy-MM-dd HH:mm");
+                                }
+                            }
+                        }
+                    },
+                    { field: 'Memo', title: '其他说明', width: 80, align: 'left' }
+                ]],
+                pagination: true,
+                pageSize: rows,
+                pageNumber: page,
+                rownumbers: true,
+                toolbar: ['-', {
+                    id: 'btnSave',
+                    text: '添加',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        var row = $("#grid").datagrid('getSelected');
+                        if (row) {
+                            var pageSize = $('#grid').datagrid("getPager").data("pagination").options.pageSize;
+                            var pageNumber = $('#grid').datagrid("getPager").data("pagination").options.pageNumber;
+                            this.href = "/PurchaseOrder/Create/?rows=" + pageSize + "&page=" + pageNumber + "&contractId=" + row.Id;
+                        } else
+                        {
+                            $.messager.alert('提示', '请选择一行数据');
+                        }
+                        
+
+                    }
+                }, '-', {
+                    id: 'btnUpdate',
+                    text: '修改',
+                    iconCls: 'icon-save',
+                    handler: function () {
+
+                        //var row = $('#dgdetail').datagrid('getSelected');
+                        var row = ddv.datagrid('getSelected');
+                        if (row) {
+                            this.href = "/PurchaseOrder/Edit/" + row.Id;
+                        }
+                        else {
+                            $.messager.alert('提示', '请选择要修改的数据');
+                            return;
+                        }
+
+                    }
+                }, '-', {
+                    id: 'btnDelete',
+                    text: '删除',
+                    disabled: false,
+                    iconCls: 'icon-cut',
+                    handler: function () {
+
+                        //var rows = $('#dgdetail').datagrid('getSelections');
+                        var rows = ddv.datagrid('getSelections');
+                        if (!rows || rows.length == 0) {
+                            $.messager.alert('提示', '请选择要删除的数据');
+                            return;
+                        }
+                        var parm;
+                        $.each(rows, function (i, n) {
+                            if (i == 0) {
+                                parm = "idList=" + n.Id;
+                            }
+                            else {
+                                parm += "&idList=" + n.Id;
+                            }
+                        });
+                        $.messager.confirm('提示', '是否删除这些数据?', function (r) {
+                            if (!r) {
+                                return;
+                            }
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/PurchaseOrder/Delete/",
+                                data: parm,
+                                success: function (msg) {
+                                    if (msg.IsSuccess) {
+                                        $.messager.alert('提示', '删除成功！', "info", function () {
+                                            ddv.datagrid("reload").datagrid('clearSelections');;
+                                        });
+                                    }
+                                },
+                                error: function () {
+                                    $.messager.alert('错误', '删除失败！', "error");
+                                }
+                            });
+                        });
+                    }
+                }],
+                view: detailview,
+                detailFormatter: function (index, row) {
+                    return '<div style="padding:2px"><table id="dgdetail' + row.Id + '" class="ddv"></table></div>';
+                },
+                onExpandRow: function (index, row) {
+                    ddv = $(this).datagrid('getRowDetail', index).find('table.ddv');
+                    ddv.datagrid({
+                        url: '/PurchaseOrder/LoadDetailPage/' + row.Id,
+
+                        idField: 'Id',
+                        frozenColumns: [[
+                            { field: 'Id', checkbox: true }
+                        ]],
+                        rownumbers: true,
+                        pagination: true,
+                        pageSize: 20,
+                        loadMsg: '',
+                        height: 'auto',
+                        rowStyler: function (index, row) {
+                            if (row.Status == 1) {
+                                return 'color:#f00;';
+                            } else if (row.Status == 2) {
+                                return 'color:#00f;';
+                            } else if (row.Status == 3) {
+                                return 'color:#000;';
+                            }
+                        },
+                        columns: [[
+                            { field: 'PurchaseNum', title: '采购申请编号', width: 100, align: 'left' },
+                            { field: 'PurchasePerson', title: '采购申请人', width: 100, align: 'left' },
+                            { field: 'PurchaseApproved', title: '采购申请批准', width: 80, align: 'left' },
+                            {
+                                field: 'PurchaseTime', title: '采购时间', width: 100, align: 'left', formatter: function (value) {
+                                    if (value != null) {
+                                        if (value.length > 0) {
+                                            value = eval("new " + value.split('/')[1]);
+                                            return dateToString(value, "yyyy-MM-dd HH:mm");
+                                        }
+                                    }
+                                }
+                            },
+
+                            { field: 'EquipmentMaterialName', title: '设备材料名称', width: 100, align: 'left' },
+                            { field: 'Brand', title: '品牌', width: 100, align: 'left' },
+                            { field: 'Specifications', title: '规格', width: 100, align: 'left' },
+                            { field: 'Unit', title: '单位', width: 100, align: 'left' },
+                            { field: 'Count', title: '数量', width: 50, align: 'center' },
+                            { field: 'UnitPrice', title: '单价', width: 50, align: 'center' },
+                            { field: 'PriceSum', title: '金额', width: 80, align: 'center' },
+                            {
+                                field: 'ArrivalTime', title: '要求到货时间', width: 100, align: 'left', formatter: function (value) {
+                                    if (value != null) {
+                                        if (value.length > 0) {
+                                            value = eval("new " + value.split('/')[1]);
+                                            return dateToString(value, "yyyy-MM-dd HH:mm");
+                                        }
+                                    }
+                                }
+                            },
+                            { field: 'ArrivalAddress', title: '到货地点', width: 100, align: 'left' },
+                            { field: 'Receiver', title: '签收人', width: 100, align: 'left' },
+                            {
+                                field: 'ReceiveTime', title: '签收时间', width: 100, align: 'left',
+                                formatter: function (value) {
+                                    if (value != null) {
+                                        if (value.length > 0) {
+                                            value = eval("new " + value.split('/')[1]);
+                                            return dateToString(value, "yyyy-MM-dd HH:mm");
+                                        }
+                                    }
+                                }
+                            },
+                            { field: 'Memo', title: '备注', width: 100, align: 'left' }
+                        ]],
+                        onResize: function () {
+                            $('#grid').datagrid('fixDetailRowHeight', index);
+                        },
+                        onLoadSuccess: function () {
+                            setTimeout(function () {
+                                $('#grid').datagrid('fixDetailRowHeight', index);
+                            }, 0);
+                        }
+                    });
+                    $('#grid').datagrid('fixDetailRowHeight', index);
+                }
+            });
+
+
+        });
+
+
+
+
+
+
+
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="center" style="padding: 5px;" border="false">
+        <table id="grid"></table>
+    </div>
+</body>
+</html>

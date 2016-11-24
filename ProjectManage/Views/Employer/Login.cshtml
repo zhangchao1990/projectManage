@@ -1,0 +1,65 @@
+﻿
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>销售项目成本管理系统</title>
+    <link href="/CSS/Default.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript">
+
+        if (window != window.top) {
+            window.top.location.href = window.location.href;
+        }
+
+
+    </script>
+
+</head>
+<body style=" margin:0; ">
+    <form id="form1" method="post"
+          action="/Employer/Login/" enctype="application/x-www-form-urlencoded">
+        <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;
+        background-color:#fff; overflow: hidden;">
+            <tr>
+                <td valign="middle" align="center">
+                    <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 202px;
+                     overflow: hidden;">
+                        <tr style="background-color:#333; ">
+                            <td align="center" valign="middle" style=" height:202px; text-align: center; background-image: url('/images/slit.png');background-repeat:repeat">
+                                &nbsp;
+                            </td>
+                            <td align="center" valign="middle" style="width: 1024px; text-align: center; vertical-align: middle; background-image: url('/Images/login.jpg'); background-position: right; background-repeat:no-repeat">
+                                <table style="width: 100%; height: 100%; text-align: center;">
+                                    <tr style="height: 70px">
+                                        <td></td>
+                                    </tr>
+                                    <tr style="height: 30px">
+                                        <td style="width: 370px"></td>
+                                        <td>
+                                            <input type="text" name="UserCount" style="width:140px;" />
+                                        </td>
+                                    </tr>
+                                    <tr style="height: 30px">
+                                        <td></td>
+                                        <td>
+                                            <input type="password"  name="Password" style="width:140px;" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td valign="top">
+                                            <input type="submit" value="登陆"  />
+                                            <input type="button" value="取消" />
+                                            <br/>
+                                            <label style="color:red;" >@ViewBag.ErrorMsg</label>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

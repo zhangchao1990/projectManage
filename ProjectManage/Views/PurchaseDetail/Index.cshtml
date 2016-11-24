@@ -1,0 +1,385 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Index</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Easyui/datagrid-detailview.js"></script>
+    <script src="~/Scripts/dateTime.js"></script>
+    <script type="text/javascript" language="javascript">
+        var ddv;
+        $(function () {
+
+
+            //getDatagrid();
+
+
+        });
+
+        function getDatagrid() {
+            var contractId = $('#ContractId').combobox('getValue');
+            if (contractId.length <= 0) {
+                contractId = 0;
+            }
+            $('#grid').datagrid({
+                title: '采购统计管理',
+                iconCls: 'icon-save',
+                nowrap: false,
+                striped: true,
+                url: '/PurchaseDetail/LoadAllByPage/' + contractId,
+                sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+                rowStyler: function (index, row) {
+
+                    try {
+                        if (parseInt(row.Status) > 0) {
+                            return 'color:#f00;';
+                        } else {
+                            return 'color:#000;';
+                        }
+
+
+                    } catch (e) {
+                        return 'color:#000;';
+                    }
+                },
+                fit: true,
+                idField: 'Id',
+                frozenColumns: [[
+	                { field: 'Id', checkbox: true }
+                ]],
+
+                columns: [[
+                    { field: 'ContractNum', title: '销售合同编号', width: 80, align: 'left' },
+                    { field: 'SalesManagers', title: '销售负责人', width: 80, align: 'left' },
+                    { field: 'ContractName', title: '合同名称', width: 150, align: 'left' },
+
+                    { field: 'PurchaseNum', title: '采购申请编号', width: 100, align: 'left' },
+                    { field: 'PurchasePerson', title: '采购申请人', width: 100, align: 'left' },
+                    { field: 'ProjectManager', title: '项目负责人', width: 100, align: 'left' },
+                    { field: 'PurchaseApproved', title: '采购申请批准', width: 80, align: 'left' },
+                    {
+                        field: 'PurchaseTime', title: '采购时间', width: 100, align: 'left', formatter: function (value) {
+                            if (value != null) {
+                                if (value.length > 0) {
+                                    value = eval("new " + value.split('/')[1]);
+                                    return dateToString(value, "yyyy-MM-dd");
+                                }
+                            }
+                        }
+                    },
+                    { field: 'Memo', title: '备注', width: 100, align: 'left' }
+                ]],
+                pagination: true,
+                pageSize: 20,
+                rownumbers: true,
+                toolbar: "#tb",
+                view: detailview,
+                detailFormatter: function (index, row) {
+                    return '<div style="padding:2px"><table  class="ddv"></table></div>';
+                },
+                onExpandRow: function (index, row) {
+                    ddv = $(this).datagrid('getRowDetail', index).find('table.ddv');
+                    ddv.datagrid({
+                        url: '/PurchaseDetail/LoadDetailPage/' + row.Id,
+                        idField: 'Id',
+                        frozenColumns: [[
+                            { field: 'Id', checkbox: true }
+                        ]],
+                        rownumbers: true,
+                        pagination: true,
+                        pageSize: 10,
+                        loadMsg: '',
+                        height: 'auto',
+                        rowStyler: function (index, row) {
+                            if (row.Status == 1) {
+                                return 'color:#f00;';
+                            } else if (row.Status == 2) {
+                                return 'color:#00f;';
+                            } else if (row.Status == 3) {
+                                return 'color:#000;';
+                            }
+                        },
+                        columns: [[
+                            { field: 'PurchaseNum', title: '采购申请编号', width: 100, align: 'left' },
+                            { field: 'PurchasePerson', title: '采购申请人', width: 80, align: 'left' },
+                            { field: 'PurchaseApproved', title: '采购申请批准', width: 80, align: 'left' },
+                            {
+                                field: 'PurchaseTime', title: '采购时间', width: 100, align: 'left', formatter: function (value) {
+                                    if (value != null) {
+                                        if (value.length > 0) {
+                                            value = eval("new " + value.split('/')[1]);
+                                            return dateToString(value, "yyyy-MM-dd");
+                                        }
+                                    }
+                                }
+                            },
+                            { field: 'EquipmentMaterialName', title: '设备材料名称', width: 100, align: 'left' },
+                            { field: 'Brand', title: '品牌', width: 80, align: 'left' },
+                            { field: 'Specifications', title: '规格', width: 200, align: 'left' },
+                            { field: 'Unit', title: '单位', width: 50, align: 'left' },
+                             { field: 'Count', title: '数量', width: 100, align: 'right', editor: { type: 'numberbox', options: { precision: 1, required: true } } },
+                            { field: 'UnitPrice', title: '单价', width: 100, align: 'right', editor: { type: 'numberbox', options: { precision: 2, required: true } } },
+                             { field: 'TaxRate', title: '税率', width: 100, align: 'right', editor: { type: 'numberbox', options: { precision: 2, required: true } } },
+                              { field: 'TaxUnitPrice', title: '含税单价', width: 100, align: 'right', editor: { type: 'numberbox', options: { precision: 2, required: true } } },
+                            { field: 'PriceSum', title: '金额', width: 100, align: 'right', editor: { type: 'numberbox', options: { precision: 2, required: true } } },
+                            {
+                                field: 'ArrivalTime', title: '要求到货时间', width: 100, align: 'left', formatter: function (value) {
+                                    if (value != null && value.indexOf("Date") >= 0) {
+
+                                        if (value.length > 0) {
+                                            value = eval("new " + value.split('/')[1]);
+                                            return dateToString(value, "yyyy-MM-dd");
+                                        }
+                                    }
+                                    else {
+                                        return value;
+                                    }
+                                }, editor: 'datebox'
+                            },
+                            { field: 'ArrivalAddress', title: '到货地点', width: 100, align: 'left', editor: 'textbox' },
+                            { field: 'Receiver', title: '签收人', width: 100, align: 'left', editor: 'textbox' },
+                            {
+                                field: 'ReceiveTime', title: '签收时间', width: 100, align: 'left', formatter: function (value) {
+                                    if (value != null && value.indexOf("Date") >= 0) {
+                                        if (value.length > 0) {
+                                            value = eval("new " + value.split('/')[1]);
+                                            return dateToString(value, "yyyy-MM-dd");
+                                        }
+                                    } else {
+                                        return value;
+                                    }
+                                }, editor: 'datebox'
+
+                            },
+                            { field: 'Memo', title: '备注', width: 100, align: 'left' }
+                        ]],
+                        onClickCell: onClickCell,
+                        onEndEdit: onEndEdit,
+                        onResize: function () {
+                            $('#grid').datagrid('fixDetailRowHeight', index);
+                        },
+                        onLoadSuccess: function () {
+                            setTimeout(function () {
+                                $('#grid').datagrid('fixDetailRowHeight', index);
+                            }, 0);
+                        }
+                    });
+                    $('#grid').datagrid('fixDetailRowHeight', index);
+                }
+            });
+
+        }
+
+
+        var editIndex = undefined;
+        function endEditing() {
+            if (editIndex == undefined) { return true }
+            if (ddv.datagrid('validateRow', editIndex)) {
+                ddv.datagrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function onClickCell(index, field) {
+            if (editIndex != index) {
+                if (endEditing()) {
+
+                    ddv.datagrid('selectRow', index)
+                            .datagrid('beginEdit', index);
+                    var edCount = ddv.datagrid('getEditor', { index: index, field: "Count" });
+                    var edUnit = ddv.datagrid('getEditor', { index: index, field: "UnitPrice" });
+                    var edPrice = ddv.datagrid('getEditor', { index: index, field: "PriceSum" });
+                    $(edCount.target).numberbox({
+                        onChange: function () {
+
+                            $(edPrice.target).numberbox("setValue", $(this).val() * $(edUnit.target).val());
+                        }
+                    });
+
+                    $(edUnit.target).numberbox({
+                        onChange: function () {
+
+                            $(edPrice.target).numberbox("setValue", $(this).val() * $(edCount.target).val());
+                        }
+                    });
+
+                    editIndex = index;
+                } else {
+                    setTimeout(function () {
+                        ddv.datagrid('selectRow', editIndex);
+                    }, 0);
+                }
+            }
+        }
+        function onEndEdit(index, row) {
+
+            //var ed = $(this).datagrid('getEditor', {
+            //    index: index,
+            //    field: 'productid'
+            //});
+            //row.productname = $(ed.target).combobox('getText');
+
+
+            $.ajax({
+                url: "/PurchaseDetail/Edit/",
+                data: row,
+                dataType: "json",
+                type: "post",
+                success: function (result) {
+                    if (!result.IsSuccess) {
+                        $.messager.alert('提示', result.Message, 'info');
+                    }
+                }
+            });
+        }
+
+
+
+
+        function accept() {
+            if (endEditing()) {
+                ddv.datagrid('acceptChanges');
+            }
+
+
+        }
+        function reject() {
+            ddv.datagrid('rejectChanges');
+            editIndex = undefined;
+        }
+
+
+        function editPurchaseDetail() {
+
+            var row = ddv.datagrid('getSelected');
+            if (row) {
+                this.location.href = "/PurchaseDetail/Edit/" + row.Id;
+            }
+            else {
+                $.messager.alert('提示', '请选择要修改的数据');
+                return;
+            }
+        }
+
+        function deletePurchaseDetail() {
+
+
+            var rows = ddv.datagrid('getSelections');
+            if (!rows || rows.length == 0) {
+                $.messager.alert('提示', '请选择要删除的数据');
+                return;
+            }
+            var parm;
+            $.each(rows, function (i, n) {
+                if (i == 0) {
+                    parm = "idList=" + n.Id;
+                }
+                else {
+                    parm += "&idList=" + n.Id;
+                }
+            });
+            $.messager.confirm('提示', '是否删除这些数据?', function (r) {
+                if (!r) {
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/PurchaseDetail/Delete/",
+                    data: parm,
+                    success: function (msg) {
+                        if (msg.IsSuccess) {
+                            $.messager.alert('提示', '删除成功！', "info", function () {
+                                ddv.datagrid("reload").datagrid('clearSelections');;
+                            });
+                        } else {
+                            $.messager.alert('错误', msg.Message, "error");
+                        }
+                    },
+                    error: function () {
+                        $.messager.alert('错误', '删除失败！', "error");
+                    }
+                });
+            });
+        }
+
+        function deletePurchaseOrder() {
+
+
+            var rows = $('#grid').datagrid('getSelections');
+            if (!rows || rows.length == 0) {
+                $.messager.alert('提示', '请选择要删除的数据');
+                return;
+            }
+            var parm;
+            $.each(rows, function (i, n) {
+                if (i == 0) {
+                    parm = "idList=" + n.Id;
+                }
+                else {
+                    parm += "&idList=" + n.Id;
+                }
+            });
+            $.messager.confirm('提示', '是否删除这些数据?', function (r) {
+                if (!r) {
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/PurchaseOrder/DeletePurchaseOrder/",
+                    data: parm,
+                    success: function (msg) {
+                        if (msg.IsSuccess) {
+                            $.messager.alert('提示', '删除成功！', "info", function () {
+                                $('#grid').datagrid("reload").datagrid('clearSelections');;
+                            });
+                        } else {
+                            $.messager.alert('错误', msg.Message, "error");
+                        }
+                    },
+                    error: function () {
+                        $.messager.alert('错误', '删除失败！', "error");
+                    }
+                });
+            });
+        }
+
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="center" style="padding: 5px;" border="false">
+        <table id="grid"></table>
+    </div>
+    <div id="tb" style="padding:2px 5px;">
+        销售合同：<input class="easyui-combobox" id="ContractId"
+                    name="ContractId"
+                    data-options="
+                    url:'/Contract/GetContractList',
+                    method:'get',
+                    valueField:'id',
+                    textField:'text',
+                    onSelect: function(rec){
+                          //getDatagrid()
+                    },
+                    onLoadSuccess: function(){
+                          getDatagrid()
+                    }
+            ">
+
+        <a href="#" class="easyui-linkbutton" iconcls="icon-search" onclick="getDatagrid()">查询</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-edit" onclick="editPurchaseDetail()">修改</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-edit" onclick="deletePurchaseDetail()">删除采购详细</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-edit" onclick="deletePurchaseOrder()">删除采购申请单</a>
+    </div>
+
+
+</body>
+</html>

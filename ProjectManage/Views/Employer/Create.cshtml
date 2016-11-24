@@ -1,0 +1,129 @@
+﻿@model ProjectManage.Models.PurchaseOrder
+<html>
+<head>
+    <title>View</title>
+
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/color.css" rel="stylesheet" />
+    <link href="~/Content/MyStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Easyui/datagrid-detailview.js"></script>
+    <script src="~/Scripts/json2.js"></script>
+    <script language="javascript" type="text/javascript">
+
+
+        function submit() {
+            $('#form').form('submit', {
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (msg) {
+                    msg = JSON.parse(msg);
+                    if (msg.IsSuccess)
+                    {
+                        $.messager.alert('提示', "保存成功", 'info', function () {
+                            window.location.href = "/Employer/Index/";
+                        });
+                    } else
+                    {
+                        $.messager.alert('提示', msg.Message, 'error');
+                    }
+                    
+                }
+            });
+        }
+
+
+
+
+
+    </script>
+</head>
+
+<body class="easyui-layout" fit="true">
+    <div region="center" border="false" title="人员信息">
+
+        <form border="false" id="form" method="post"
+              action="/Employer/Create/" enctype="application/x-www-form-urlencoded">
+            <div region="center" title="主要信息" id="fm" fit="true">
+
+                <div class="ftitle">人员信息</div>
+                <div class="fitem">
+                    <label>人员名称:</label>
+                    <input class="easyui-textbox" required="true" name="Name"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>登陆账号:</label>
+                    <input class="easyui-textbox" name="UserCount" required="true"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>登陆密码:</label>
+                    <input type="password" name="Password" class="easyui-textbox" required="true"
+                           value="" />
+                </div>
+
+                <div class="fitem">
+                    <label>说明:</label>
+                    <input type="text" class="easyui-textbox" name="Memo" required="true"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>部门:</label>
+                    <input class="easyui-combobox" id="DepartmentId" required="true"
+                           name="DepartmentId"
+                           data-options="
+                    url:'/Department/GetDepartmentList',
+                    method:'get',
+                    valueField:'id',
+                    textField:'text',
+                    onSelect: function(rec){
+
+                    }
+            ">
+                </div>
+                <div class="fitem">
+                    <label>角色:</label>
+                    <input class="easyui-combobox" id="RoleId" required="true"
+                           name="RoleId"
+                           data-options="
+                    url:'/Role/GetRoleList',
+                    method:'get',
+                    valueField:'id',
+                    textField:'text',
+                    onSelect: function(rec){
+
+                    }
+            ">
+                </div>
+            </div>
+
+        </form>
+
+
+
+        <div region="south" border="false" style="text-align: right; height: 40px; line-height: 30px;
+            background-color: #f7f7f7;">
+            <table style="width: 100%">
+                <tr>
+                    <td></td>
+                    <td style="text-align: right">
+
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-save" onclick="submit();">提交</a>
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="location.href = document.referrer;">
+                            返回
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+

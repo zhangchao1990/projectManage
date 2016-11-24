@@ -1,0 +1,75 @@
+﻿@model ProjectManage.Models.Contract
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<fieldset>
+    <legend>Contract</legend>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.SalesManagers)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.SalesManagers)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.ContractName)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.ContractName)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.CustmersDept)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CustmersDept)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.OrderTime)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.OrderTime)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.ContractCount)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.ContractCount)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.BillingTime)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.BillingTime)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.BillNum)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.BillNum)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.PayOrders)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.PayOrders)
+    </div>
+</fieldset>
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    <p>
+        <input type="submit" value="Delete" /> |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+}

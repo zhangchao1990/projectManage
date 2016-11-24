@@ -1,0 +1,78 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Index</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/dateTime.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            var rowId = '@ViewBag.id';
+            $('#grid').datagrid({
+                title: '成本统计信息',
+                iconCls: 'icon-save',
+                nowrap: false,
+                striped: true,
+                url: '/Contract/GetPurchaseDetailList/' + '@ViewBag.id',
+                sortName: 'Id',
+                sortOrder: 'desc',
+                remoteSort: true,
+
+                fit: true,
+                idField: 'Id',
+                frozenColumns: [[
+	                { field: 'Id', checkbox: true }
+                ]],
+
+                columns: [[
+                    { field: 'Name', title: '成本类型', width: 200, align: 'left' },
+                    { field: 'Count', title: '成本统计', width: 200, align: 'left' },
+                    {
+                        field: 'Memo', title: '备注', width: 200, align: 'left', formatter: function (value, row) {
+                            if (value != null) {
+                                if (row.Name == "差旅") {
+                                    return '<a href="/EngineeringReimbursement/IndexView/' + rowId + '">' + value + '</a>';
+                                }
+                                else if (row.Name == "外协") {
+                                    return '<a href="/OutsourcingCost/IndexView/' + rowId + '">' + value + '</a>';
+                                }
+                                else if (row.Name == "采购") {
+
+                                    return '<a href="/PurchaseDetail/IndexQueryView/' + rowId + '">' + value + '</a>';
+                                }
+                                else if (row.Name == "其它") {
+                                    return '<a href="/BusinessCost/IndexView/' + rowId + '">' + value + '</a>';
+                                }
+
+
+
+                            }
+                        }
+                    }
+                ]],
+                pagination: true,
+                pageSize: 20,
+                rownumbers: true,
+                toolbar: ['-', {
+                    id: 'btnReturn',
+                    text: '返回',
+                    iconCls: 'icon-more',
+                    handler: function () {
+                        location.href = "/Contract/Index/";
+                    }
+                }]
+            });
+
+
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="center" style="padding: 5px;" border="false">
+        <table id="grid"></table>
+    </div>
+</body>
+</html>

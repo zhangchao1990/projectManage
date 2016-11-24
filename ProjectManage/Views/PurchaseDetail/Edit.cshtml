@@ -1,0 +1,171 @@
+﻿@model ProjectManage.Models.PurchaseDetail
+<html>
+<head>
+    <title>View</title>
+
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/color.css" rel="stylesheet" />
+    <link href="~/Content/MyStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script language="javascript" type="text/javascript">
+
+
+        function submit() {
+            $('#form').form('submit', {
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (msg) {
+                    $.messager.alert('提示', "保存成功", 'info', function () {
+                        window.location.href = "/PurchaseDetail/Index/";
+                    });
+                }
+            });
+        }
+        function setPriceSum() {
+
+            if ($('#Count').val().length > 0 && $('#UnitPrice').val().length > 0) {
+
+                //$('#TaxUnitPrice').numberbox('setValue', $('#UnitPrice').val() * (parseFloat($('#TaxRate').val()) + 1));
+                $('#PriceSum').numberbox('setValue', $('#Count').val() * $('#UnitPrice').val());
+            } else {
+                $.messager.alert('提示', "请填写单价、税率和数量", 'info');
+            }
+        }
+
+        function setTaxPriceSum() {
+            if ($('#Count').val().length > 0 && $('#TaxRate').val().length > 0) {
+                //$('#UnitPrice').numberbox('setValue', $('#TaxUnitPrice').val() / (parseFloat($('#TaxRate').val()) + 1));
+                //$('#PriceSum').numberbox('setValue', $('#Count').val() * $('#UnitPrice').val());
+            } else {
+                $.messager.alert('提示', "请填写税率和数量", 'info');
+            }
+        }
+
+    </script>
+</head>
+
+<body class="easyui-layout" fit="true">
+    <div region="center" border="false" title="采购统计信息">
+
+        <form border="false" id="form" method="post"
+              action="/PurchaseDetail/Edit/" enctype="application/x-www-form-urlencoded">
+            <div region="center" title="主要信息" id="fm" fit="true">
+
+                @*<div class="fitem">
+                    <label>物料号:</label>
+                    <input class="easyui-textbox"  name="MaterialNum"
+                           value="@Model.MaterialNum" />
+                </div>*@
+                <div class="fitem">
+                    <label>设备材料名称:</label>
+                    <input class="easyui-textbox" required="true" name="EquipmentMaterialName"
+                           value="@Model.EquipmentMaterialName" />
+                </div>
+                <div class="fitem">
+                    <label>品牌:</label>
+                    <input class="easyui-textbox" name="Brand"
+                           value="@Model.Brand" />
+                </div>
+                <div class="fitem">
+                    <label>规格:</label>
+                    <input type="text" class="easyui-textbox" required="true" name="Specifications"
+                           value="@Model.Specifications" />
+                </div>
+                <div class="fitem">
+                    <label>单位:</label>
+                    <input type="text" class="easyui-textbox" required="true" name="Unit"
+                           value="@Model.Unit" />
+                </div>
+                <div class="fitem">
+                    <label>数量:</label>
+                    <input type="text" class="easyui-numberbox" precision="1" name="Count" id="Count" required="true" data-options="onChange:function(newval,oldval){
+                                setPriceSum();
+                           }"
+                           value="@Model.Count" />
+                </div>
+                <div class="fitem">
+                    <label>单价:</label>
+                    <input type="text" class="easyui-numberbox" precision="2" id="UnitPrice" name="UnitPrice" required="true"
+                           value="@Model.UnitPrice" data-options="onChange:function(newval,oldval){
+                                setPriceSum();
+                           }" />
+                </div>
+                <div class="fitem">
+                    <label>税率:</label>
+                    <input type="text" class="easyui-numberbox" precision="2" id="TaxRate" name="TaxRate" required="true"
+                           value="@Model.TaxRate" data-options="onChange:function(newval,oldval){
+                                setPriceSum();
+                           }" />
+                </div>
+                <div class="fitem">
+                    <label>含税单价:</label>
+                    <input type="text" class="easyui-numberbox" precision="2" id="TaxUnitPrice" name="TaxUnitPrice" required="true"
+                           value="@Model.TaxUnitPrice" data-options="onChange:function(newval,oldval){
+                                setTaxPriceSum();
+                           }" />
+                </div>
+                <div class="fitem">
+                    <label>总价:</label>
+                    <input type="text" class="easyui-numberbox" precision="2" id="PriceSum" name="PriceSum" required="true"
+                           value="@Model.PriceSum" />
+                </div>
+                <div class="fitem">
+                    <label>备注:</label>
+                    <input type="text" class="easyui-textbox" name="Memo"
+                           value="@Model.Memo" />
+                </div>
+                <div class="fitem">
+                    <label>到货时间:</label>
+                    <input type="text" class="easyui-datebox" name="ArrivalTime"
+                           value="@Model.ArrivalTime" />
+                </div>
+                <div class="fitem">
+                    <label>到货地点:</label>
+                    <input type="text" class="easyui-textbox" name="ArrivalAddress"
+                           value="@Model.ArrivalAddress" />
+                </div>
+                <div class="fitem">
+                    <label>签收人:</label>
+                    <input type="text" class="easyui-textbox" name="Receiver"
+                           value="@Model.Receiver" />
+                </div>
+                <div class="fitem">
+                    <label>签收时间:</label>
+                    <input type="text" class="easyui-datebox" name="ReceiveTime"
+                           value="@Model.ReceiveTime" />
+                </div>
+                <div class="fitem">
+                    <label>备注:</label>
+                    <input type="text" class="easyui-textbox" name="Memo"
+                           value="@Model.Memo" />
+                </div>
+
+                <input type="hidden" name="PurchaseOrderId" value="@Model.PurchaseOrder.Id" />
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+            </div>
+        </form>
+        <div region="south" border="false" style="text-align: right; height: 40px; line-height: 30px;
+            background-color: #f7f7f7;">
+            <table style="width: 100%">
+                <tr>
+                    <td></td>
+                    <td style="text-align: right">
+
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-save" onclick="submit();">提交</a>
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="location.href = document.referrer;">
+                            返回
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+

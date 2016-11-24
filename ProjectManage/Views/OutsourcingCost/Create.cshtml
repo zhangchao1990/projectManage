@@ -1,0 +1,116 @@
+﻿@model ProjectManage.Models.PurchaseOrder
+<html>
+<head>
+    <title>View</title>
+
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Easyui/themes/color.css" rel="stylesheet" />
+    <link href="~/Content/MyStyle.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Easyui/datagrid-detailview.js"></script>
+    <script language="javascript" type="text/javascript">
+
+
+        function submit() {
+            $('#form').form('submit', {
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (msg) {
+                    $.messager.alert('提示', "保存成功", 'info', function () {
+                        window.location.href = "/OutsourcingCost/Index/";
+                    });
+                }
+            });
+        }
+
+
+
+
+
+    </script>
+</head>
+
+<body class="easyui-layout" fit="true">
+    <div region="center" border="false" title="外协用工的工资费用统计">
+        
+        <form border="false" id="form" method="post"
+              action="/OutsourcingCost/Create/" enctype="application/x-www-form-urlencoded">
+            <div region="center" title="主要信息" id="fm" fit="true">
+
+                <div class="ftitle">外协用工的工资费用统计</div>
+                <div class="fitem">
+                    <label>外协工姓名:</label>
+                    <input class="easyui-textbox" required="true" name="OutsourcingPeopleName"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>开始时间:</label>
+                    <input class="easyui-datetimebox" name="BeginTime" required="true"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>结束时间:</label>
+                    <input class="easyui-datetimebox" name="EndTime" required="true"
+                           value="" />
+                </div>
+
+                <div class="fitem">
+                    <label>天数:</label>
+                    <input type="text" class="easyui-numberbox" name="Days" precision="2" required="true"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>工资:</label>
+                    <input type="text" class="easyui-numberbox" name="Pay" precision="2" required="true"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>备注:</label>
+                    <input class="easyui-textbox" name="Memo"
+                           value="" />
+                </div>
+                <div class="fitem">
+                    <label>销售合同信息:</label>
+                    <input class="easyui-combobox" id="ContractId"
+                           name="ContractId"
+                           data-options="
+                    url:'/Contract/GetContractList',
+                    method:'get',
+                    valueField:'id',
+                    textField:'text',
+                    onSelect: function(rec){
+
+                    }
+            ">
+                </div>
+            </div>
+
+        </form>
+        <div region="north" border="false" style="text-align: right; height: 40px; line-height: 30px;
+            background-color: #f7f7f7;">
+            <table style="width: 100%">
+                <tr>
+                    <td></td>
+                    <td style="text-align: right">
+
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-save" onclick="submit();">提交</a>
+                        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="location.href = document.referrer;">
+                            返回
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
+        
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,283 @@
+﻿@model ProjectManage.Models.Employer
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>销售项目成本管理系统</title>
+
+    <link href="~/Easyui/themes/default/easyui.css" rel="stylesheet" />
+
+    <style type="text/css">
+        td.amrow {
+            padding-right: 3px;
+            padding-left: 3px;
+            background: #f7f7f7;
+            padding-bottom: 3px;
+            padding-top: 3px;
+        }
+
+        a {
+            color: #000000;
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: #93B4E6;
+                text-decoration: none;
+            }
+
+        .title {
+            background-image: url(/Images/bg_bottom.jpg);
+            background-color: #99ABCC;
+            color: White;
+            font-weight: bold;
+        }
+        .TopBack {
+            background: url("../Images/TopBack.png") repeat-x;
+            height: 75px;
+        }
+        .TopMes {
+            color: #ffffff;
+            margin: 30px 0 0 20px;
+            font-weight: bolder;
+            float: right;
+            background: font-size:12px;
+        }
+    </style>
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+
+    <script src="~/Easyui/jquery.easyui.min.js"></script>
+
+    <script src="~/Easyui/locale/easyui-lang-zh_CN.js"></script>
+
+    <script type="text/javascript" language="javascript">
+
+        $(function () {
+            
+            getMenus();
+        })
+
+        function getMenus() {
+            $.ajax({
+                type: "POST",
+                url: "/Home/GenerateMenus",
+                data: {},
+                dataType: "html",
+                success: function (result) {
+                    $("#Menus").html(result);
+                    $('#Menus').accordion({
+                        animate: true,
+                        fit: true,
+                        border:false
+                    });
+                }
+            });
+        }
+
+        function showChangePasswordWin() {
+            $('#winPassword').window('open');
+        }
+
+        function changePassword() {
+            var oldPassword = $("#iptOldPassword").val();
+            if (oldPassword == "") {
+                $.messager.alert('提示', '请输入旧密码！');
+                return;
+            }
+
+            var password = $("#iptPassword").val();
+            if (password == "") {
+                $.messager.alert('提示', '请输入新密码！');
+                return;
+            }
+
+            var newPassword = $("#iptNewPassword").val();
+            if (newPassword == "") {
+                $.messager.alert('提示', '请确认密码！');
+                return;
+            }
+
+            if (newPassword != password) {
+                $.messager.alert('提示', '两次密码不一致，请重新输入！');
+                return;
+            }
+            var parm = { password: password, oldPassword: oldPassword };
+            $.ajax({
+                type: "POST",
+                url: "/Home/ChangedPassword/",
+                data: parm,
+                success: function (msg) {
+                    if (msg.IsSuccess) {
+                        $.messager.alert('提示', '修改成功！', "info", function () {
+                            $('#winPassword').window('close');
+                            $("#iptOldPassword").val("");
+                            $("#iptPassword").val("");
+                            $("#iptNewPassword").val("");
+                        });
+                    } else {
+                        $.messager.alert('提示', '密码错误，请重新输入！', "info");
+                    }
+                },
+                error: function () {
+                    $.messager.alert('错误', '修改失败！', "error");
+                }
+            });
+        }
+
+        function showTab(url, title) {
+            var tab = $('#tab');
+            if (tab.tabs('exists', title)) {
+                tab.tabs('select', title);
+            }
+            else {
+                tab.tabs('add', {
+                    title: title,
+                    content: "<iframe scrolling='yes' frameborder='0' src='/"
+                        + url + "/' style='width:100%;height:100%;'/>",
+                    closable: true
+                });
+
+            }
+        }
+
+
+
+
+    </script>
+</head>
+<body class="easyui-layout">
+    <div region="north" border="false" style="background: #666;  height: 75px">
+        <div style="height: 75px; clear: both;" class="TopBack">
+            <img src="~/Images/logo.jpg" alt="" style="float: left; margin-left:50px; width:100px;height:75px;" />
+            <div class="TopMes">
+
+
+                登陆用户：<a href="#" onclick="">@Model.Name</a>&nbsp;
+                <a href="#" onclick="showChangePasswordWin();">修改密码</a>&nbsp; <a href="/Employer/LogOut/">
+                    退出系统
+                </a>
+
+            </div>
+        </div>
+        
+    </div>
+    <div region="west" split="true" title="
+        <font color='#993333'>系统菜单</font>"  style="width: 150px;">
+        <div  id="Menus" style="background-color: #E0ECFF;
+            background-repeat: repeat-x;">
+
+            @*<div title="销售采购管理" style="overflow: auto;">
+                <table border="0" cellspacing="1" cellpadding="1" align="center">
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('Contract',$(this).html());">销售合同管理</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('PurchaseOrder',$(this).html());">采购申请管理</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('PurchaseDetail',$(this).html());">采购统计管理</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('Tool',$(this).html());">工具管理</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('EngineeringReimbursement', $(this).html());">差旅费用统计</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('OutsourcingCost', $(this).html());">外协用工费用统计</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('BusinessCost', $(this).html());">其它开支费用统计</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div title="系统管理" style="overflow: auto;">
+                <table border="0" cellspacing="1" cellpadding="1" align="center">
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('Department',$(this).html());">部门管理</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('Employer',$(this).html());">人员管理</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('Role',$(this).html());">角色管理</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="23">
+                            <a href="#" onclick="showTab('RoleMenu',$(this).html());">权限管理</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>*@
+        </div>
+    </div>
+    <div region="south" border="false" style="height: 20px; background: #A9FACD; text-align: center;
+        line-height: 20px; ">
+        Copy Right ®2015-2016
+    </div>
+    <div region="center">
+        <div id="tab" class="easyui-tabs" fit="true" border="false">
+
+        </div>
+    </div>
+    <div id="winPassword" class="easyui-window" closed="true" modal="true" title="修改密码"
+         style="width: 280px; height: 200px;" collapsible="false" minimizable="false"
+         maximizable="false">
+        <div class="easyui-layout" fit="true">
+            <div region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+                <table>
+                    <tr>
+                        <td>
+                            旧密码：
+                        </td>
+                        <td>
+                            <input type="password" id="iptOldPassword" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            新密码：
+                        </td>
+                        <td>
+                            <input type="password" id="iptPassword" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            确认密码：
+                        </td>
+                        <td>
+                            <input type="password" id="iptNewPassword" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div region="south" border="false" style="text-align: right; height: 30px; line-height: 30px;">
+                <a class="easyui-linkbutton" iconcls="icon-ok" href="javascript:void(0)" onclick="changePassword()">
+                    确定
+                </a> <a class="easyui-linkbutton" iconcls="icon-cancel" href="javascript:void(0)"
+                        onclick="$('#winPassword').window('close');">取消</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
